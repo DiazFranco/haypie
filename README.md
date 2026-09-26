@@ -10,6 +10,7 @@ App móvil (iOS + Android) para llevar el marcador de partidas de Truco Argentin
 
 - **Crear una mesa** — hasta 6 jugadores, se arman automáticamente en 2 equipos (primera mitad vs segunda) con separador visual `VS`.
 - **Unirse con código + PIN** — la mesa genera un código único (`TRUCO-XXXXXX`) verificando colisiones; cualquiera se une con el código y el PIN.
+- **Modo espectador** — unirse solo con el código permite ver la partida en vivo, el historial y las estadísticas; el PIN solo es necesario para sumar puntos, deshacer y finalizar. Ideal para ver cómo va otra mesa sin poder modificarla.
 - **Marcador en vivo** — `+1/+2/+3/+4`, deshacer, y objetivo configurable **15 o 30 puntos**.
 - **Partida en vivo entre dispositivos** — si hay conexión, los puntos se replican en tiempo real (Realtime) y cualquier persona de la mesa ve cómo va la partida.
 - **Historial** — cada partido queda guardado con equipos, resultado, ganador, objetivo y fecha.
@@ -120,7 +121,7 @@ Los `match_event` son el timeline de la partida (`+1`, `+2`, `+4`, ...), lo que 
 
 - No se piden datos personales: nombre, código y PIN alcanzan.
 - El PIN se almacena hasheado en la base (nunca en claro en el servidor).
-- RLS por PIN en todas las tablas (lectura/escritura acotada a la mesa).
+- **Lectura libre por código** (espectador), **escritura solo con PIN**: RLS permite ver equipos, marcador e historial a cualquiera que conozca el código, pero exige el PIN correcto para insertar/actualizar/borrar.
 - Broadcast de Realtime solo en canal propio de cada mesa.
 
 ## Roadmap (fuera del MVP)

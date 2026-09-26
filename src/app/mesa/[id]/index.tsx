@@ -22,11 +22,11 @@ export default function MesaDetailScreen() {
 
   const loadOpenMatch = useCallback(() => {
     if (!mesa || !isServerId(mesa.id)) return;
-    getOpenMatch(mesa.id, mesa.pin).then((open) => {
+    getOpenMatch(mesa.id).then((open) => {
       if (open) {
         setLiveMatchId(open.id);
         setLiveTeams({ a: open.team_a_players, b: open.team_b_players });
-        getMatchEvents(open.id, mesa.pin).then(setLiveEvents);
+        getMatchEvents(open.id).then(setLiveEvents);
       } else {
         setLiveMatchId(null);
         setLiveTeams({ a: [], b: [] });
@@ -95,6 +95,10 @@ export default function MesaDetailScreen() {
       ) : null}
       {mesa ? <Text style={styles.pin}>PIN {mesa.pin}</Text> : null}
 
+      {mesa?.spectator ? (
+        <Text style={styles.spectatorBadge}>Modo espectador: solo lectura</Text>
+      ) : null}
+
       {liveMatchId ? (
         <Link href={`/partida/${id}`} asChild>
           <Pressable style={({ pressed }) => [styles.liveCard, pressed && styles.liveCardPressed]}>
@@ -123,9 +127,11 @@ export default function MesaDetailScreen() {
       </View>
 
       <View style={styles.actions}>
-        <Link href={`/partida/${id}`} asChild>
-          <Button title="Empezar partida" onPress={() => {}} disabled={players.length < 2} />
-        </Link>
+        {!mesa?.spectator ? (
+          <Link href={`/partida/${id}`} asChild>
+            <Button title="Empezar partida" onPress={() => {}} disabled={players.length < 2} />
+          </Link>
+        ) : null}
         <Link href={`/mesa/${id}/historial`} asChild>
           <Button title="Historial" variant="ghost" onPress={() => {}} />
         </Link>
@@ -155,6 +161,12 @@ const styles = StyleSheet.create({
     padding: 6,
   },
   copyPressed: { opacity: 0.7 },
+  spectatorBadge: {
+    color: colors.danger,
+    fontSize: 13,
+    fontWeight: '700',
+    marginBottom: 24,
+  },
   liveCard: {
     backgroundColor: colors.surface,
     borderColor: colors.positive,

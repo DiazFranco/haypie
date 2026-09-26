@@ -24,16 +24,20 @@ export default function PartidaScreen() {
   const serverMatchIdRef = useRef<string | null>(null);
   const targetRef = useRef(30);
   const loadingRef = useRef(false);
+  const spectatorRef = useRef(false);
 
   useEffect(() => {
     eventsRef.current = events;
   }, [events]);
 
+  const spectator = !!mesa?.spectator;
+
   const sync = () => {
     serverMatchIdRef.current = serverMatchId;
     targetRef.current = target;
+    spectatorRef.current = spectator;
   };
-  useEffect(sync, [serverMatchId, target]);
+  useEffect(sync, [serverMatchId, target, spectator]);
 
   const score = (team: 'team_a' | 'team_b') =>
     events.filter((e) => e.team === team).reduce((s, e) => s + e.points, 0);
@@ -65,13 +69,14 @@ export default function PartidaScreen() {
     if (loadingRef.current) return null;
     loadingRef.current = true;
     try {
-      const open = await getOpenMatch(mesa.id, mesa.pin);
+      const open = await getOpenMatch(mesa.id);
       if (open) {
-        eventsRef.current = await getMatchEvents(open.id, mesa.pin);
+        eventsRef.current = await getMatchEvents(open.id);
         setEvents(eventsRef.current);
         applyLive(open);
         return open.id;
       }
+      if (spectatorRef.current) return null;
       const { teamA, teamB } = getTeamIds();
       const created = await createOpenMatch(mesa.id, mesa.pin, {
         targetPoints: targetRef.current,
@@ -112,7 +117,7 @@ export default function PartidaScreen() {
   }, [mesa]);
 
   const addPoints = async (team: 'team_a' | 'team_b', points: number) => {
-    if (winner) return;
+    if (winner || spectator) return;
     const event: MatchEvent = { team, points, created_at: new Date().toISOString() };
     applyEvent(event);
 
@@ -126,7 +131,7 @@ export default function PartidaScreen() {
   };
 
   const undo = async () => {
-    if (events.length === 0) return;
+    if (events.length === 0 || spectator) return;
     setEvents((prev) => prev.slice(0, -1));
     if (mesa && isServerId(mesa.id) && isSupabaseConfigured && serverMatchIdRef.current) {
       await deleteLastEvent(mesa.id, mesa.pin, serverMatchIdRef.current);
@@ -135,6 +140,7 @@ export default function PartidaScreen() {
   };
 
   const handleFinish = async () => {
+    if (spectator) return;
     const half = Math.ceil(players.length / 2);
     const teamAPlayers = players.slice(0, half).map((p) => p.name);
     const teamBPlayers = players.slice(half).map((p) => p.name);
@@ -155,7 +161,7 @@ export default function PartidaScreen() {
   return (
     <View style={styles.container}>
       <BackButton />
-      {live ? <Text style={styles.liveBadge}>● EN VIVO</Text> : null}
+      {live ? <Text style={styles.liveBadge}>{spectator ? '● EN VIVO · SOLO LECTURA' : '● EN VIVO'}</Text> : null}
       <View style={styles.matchup}>
         <View style={styles.matchupTeam}>
           <Text style={styles.matchupLabel}>EQUIPO A</Text>
@@ -168,21 +174,23 @@ export default function PartidaScreen() {
         </View>
       </View>
 
-      <View style={styles.targetRow}>
-        {TARGETS.map((t) => (
-          <Pressable
-            key={t}
-            onPress={() => setTarget(t)}
-            style={[styles.targetBtn, target === t && styles.targetBtnActive]}
-          >
-            <Text style={[styles.targetText, target === t && styles.targetTextActive]}>
-              {t} pts
-            </Text>
-          </Pressable>
-        ))}
-      </View>
+      {!spectator ? (
+        <View style={styles.targetRow}>
+          {TARGETS.map((t) => (
+            <Pressable
+              key={t}
+              onPress={() => setTarget(t)}
+              style={[styles.targetBtn, target === t && styles.targetBtnActive]}
+            >
+              <Text style={[styles.targetText, target === t && styles.targetTextActive]}>
+                {t} pts
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+      ) : null}
 
-      {winner ? (
+      {winner && !spectator ? (
         <View style={styles.winnerBanner}>
           <Text style={styles.winnerText}>🏆 ¡Ganó el equipo {winner}!</Text>
           <Button title="Guardar partida" onPress={handleFinish} />
@@ -200,16 +208,22 @@ export default function PartidaScreen() {
         </View>
       </View>
 
-      <View style={styles.padRow}>
-        {SCORE_OPTIONS.map((points) => (
-          <View key={points} style={styles.padCol}>
-            <Button title={`+${points}`} onPress={() => addPoints('team_a', points)} />
-            <Button title={`+${points}`} variant="ghost" onPress={() => addPoints('team_b', points)} />
+      {spectator ? (
+        <Text style={styles.spectatorHint}>Modo espectador: podés ver el marcador, no sumar puntos.</Text>
+      ) : (
+        <View>
+          <View style={styles.padRow}>
+            {SCORE_OPTIONS.map((points) => (
+              <View key={points} style={styles.padCol}>
+                <Button title={`+${points}`} onPress={() => addPoints('team_a', points)} />
+                <Button title={`+${points}`} variant="ghost" onPress={() => addPoints('team_b', points)} />
+              </View>
+            ))}
           </View>
-        ))}
-      </View>
 
-      <Button title="↩ Deshacer" variant="ghost" onPress={undo} disabled={!canUndo} />
+          <Button title="↩ Deshacer" variant="ghost" onPress={undo} disabled={!canUndo} />
+        </View>
+      )}
     </View>
   );
 }
@@ -253,4 +267,10 @@ const styles = StyleSheet.create({
   score: { color: colors.text, fontSize: 72, fontWeight: '900' },
   padRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 8, marginBottom: 24 },
   padCol: { flex: 1, gap: 10 },
+  spectatorHint: {
+    color: colors.textMuted,
+    textAlign: 'center',
+    fontSize: 14,
+    marginTop: 'auto',
+  },
 });

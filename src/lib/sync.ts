@@ -67,23 +67,31 @@ export async function pushMesa(
   }
 }
 
-export async function fetchMesaByCode(code: string, pin: string) {
+export async function fetchMesaByCode(code: string) {
   if (!isSupabaseConfigured) return null;
-  const db = clientForPin(pin);
-  const { data } = await db
+  const { data } = await supabase
     .from('mesa')
     .select('id, name, join_code')
     .eq('join_code', code)
     .single();
   if (!data) return null;
 
-  const players = await fetchPlayers(String(data.id), pin);
-  return { mesa: data as { id: string; name: string; join_code: string }, pin, players };
+  const players = await fetchPlayers(String(data.id));
+  return { mesa: data as { id: string; name: string; join_code: string }, players };
 }
 
-export async function fetchPlayers(mesaId: string, pin: string): Promise<ServerPlayer[]> {
+export async function verifyPin(code: string, pin: string): Promise<boolean> {
+  if (!isSupabaseConfigured) return false;
+  const { data, error } = await supabase.rpc('verify_pin', {
+    p_join_code: code,
+    p_pin: pin,
+  });
+  return !error && data === true;
+}
+
+export async function fetchPlayers(mesaId: string): Promise<ServerPlayer[]> {
   if (!isSupabaseConfigured) return [];
-  const { data } = await clientForPin(pin)
+  const { data } = await supabase
     .from('player')
     .select('id, name')
     .eq('mesa_id', mesaId);
@@ -92,9 +100,9 @@ export async function fetchPlayers(mesaId: string, pin: string): Promise<ServerP
 
 // ---- Partida ----
 
-export async function getOpenMatch(mesaId: string, pin: string): Promise<ServerMatch | null> {
+export async function getOpenMatch(mesaId: string): Promise<ServerMatch | null> {
   if (!isSupabaseConfigured) return null;
-  const { data } = await clientForPin(pin)
+  const { data } = await supabase
     .from('match')
     .select('*')
     .eq('mesa_id', mesaId)
@@ -102,6 +110,17 @@ export async function getOpenMatch(mesaId: string, pin: string): Promise<ServerM
     .limit(1)
     .maybeSingle();
   return (data as ServerMatch | null) ?? null;
+}
+
+export async function getServerMatches(mesaId: string): Promise<ServerMatch[]> {
+  if (!isSupabaseConfigured) return [];
+  const { data } = await supabase
+    .from('match')
+    .select('*')
+    .eq('mesa_id', mesaId)
+    .not('finished_at', 'is', null)
+    .order('started_at', { ascending: false });
+  return (data ?? []) as ServerMatch[];
 }
 
 export async function createOpenMatch(mesaId: string, pin: string, input: {
@@ -125,9 +144,9 @@ export async function createOpenMatch(mesaId: string, pin: string, input: {
   return data as ServerMatch;
 }
 
-export async function getMatchEvents(matchId: string, pin: string): Promise<MatchEvent[]> {
+export async function getMatchEvents(matchId: string): Promise<MatchEvent[]> {
   if (!isSupabaseConfigured) return [];
-  const { data } = await clientForPin(pin)
+  const { data } = await supabase
     .from('match_event')
     .select('team, points, created_at')
     .eq('match_id', matchId)

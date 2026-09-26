@@ -13,8 +13,8 @@ export default function JoinMesaScreen() {
 
   const handleJoin = async () => {
     setError(null);
-    if (!code.trim() || pin.length < 4) {
-      setError('Ingresá el código de la mesa y el PIN.');
+    if (!code.trim()) {
+      setError('Ingresá el código de la mesa.');
       return;
     }
     setLoading(true);
@@ -33,12 +33,15 @@ export default function JoinMesaScreen() {
       <BackButton />
       <Input label="Código de la mesa" value={code} onChangeText={setCode} placeholder="TRUCO-8K4P" />
       <Input
-        label="PIN"
+        label="PIN (opcional)"
         value={pin}
         onChangeText={setPin}
         keyboardType="number-pad"
         secureTextEntry
       />
+      <Text style={styles.hint}>
+        Sin PIN te unís como espectador: vas a poder ver la partida en vivo. Con el PIN además podés sumar puntos.
+      </Text>
       {error ? <Text style={styles.error}>{error}</Text> : null}
       <Button title={loading ? 'Buscando…' : 'Unirse'} onPress={handleJoin} disabled={loading} />
     </ScrollView>
@@ -48,4 +51,5 @@ export default function JoinMesaScreen() {
 const styles = StyleSheet.create({
   container: { padding: 24, backgroundColor: colors.background, flexGrow: 1 },
   error: { color: colors.danger, marginBottom: 12, textAlign: 'center' },
+  hint: { color: colors.textMuted, fontSize: 13, marginBottom: 16 },
 });

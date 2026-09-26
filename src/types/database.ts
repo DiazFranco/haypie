@@ -5,6 +5,7 @@ export type Mesa = {
   pin: string;
   players: Player[];
   created_at: string;
+  spectator?: boolean;
 };
 
 export type Player = {

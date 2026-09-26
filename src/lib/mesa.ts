@@ -1,6 +1,6 @@
 import { getMesas, getMesa, saveMesa, saveMatch, getMatches as getMatchesLocal, newId } from '@/lib/storage';
 import { isSupabaseConfigured } from '@/lib/supabase';
-import { pushMesa, fetchMesaByCode, isServerId, finishMesaMatch, broadcastMesa } from '@/lib/sync';
+import { pushMesa, fetchMesaByCode, verifyPin, isServerId, getServerMatches, finishMesaMatch, broadcastMesa } from '@/lib/sync';
 import type { Mesa, Player, Match, MatchEvent } from '@/types/database';
 
 const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -57,28 +57,47 @@ export async function createMesa(name: string, playerNames: string[], pin: strin
 }
 
 export async function joinMesaByCode(code: string, pin: string): Promise<Mesa> {
+  const normalized = code.trim();
   const mesas = await getMesas();
-  const local = mesas.find((m) => m.join_code.toLowerCase() === code.trim().toLowerCase());
+  const local = mesas.find((m) => m.join_code.toLowerCase() === normalized.toLowerCase());
+
   if (local) {
-    if (local.pin !== pin) throw new Error('PIN incorrecto.');
+    if (pin) {
+      if (local.spectator) {
+        if (isSupabaseConfigured && (await verifyPin(local.join_code, pin))) {
+          local.pin = pin;
+          local.spectator = false;
+          await saveMesa(local);
+          return local;
+        }
+        throw new Error('PIN incorrecto.');
+      }
+      if (local.pin !== pin) throw new Error('PIN incorrecto.');
+    }
     return local;
   }
 
   if (isSupabaseConfigured) {
-    const fetched = await fetchMesaByCode(code.trim(), pin);
-    if (fetched) {
-      const mesa: Mesa = {
-        id: fetched.mesa.id,
-        name: fetched.mesa.name,
-        join_code: fetched.mesa.join_code,
-        pin,
-        players: fetched.players,
-        created_at: new Date().toISOString(),
-      };
-      await saveMesa(mesa);
-      return mesa;
+    const fetched = await fetchMesaByCode(normalized);
+    if (!fetched) throw new Error('No se encontró la mesa con ese código.');
+
+    let canEdit = false;
+    if (pin) {
+      if (!(await verifyPin(fetched.mesa.join_code, pin))) throw new Error('PIN incorrecto.');
+      canEdit = true;
     }
-    throw new Error('No se encontró la mesa con ese código o el PIN no coincide.');
+
+    const mesa: Mesa = {
+      id: fetched.mesa.id,
+      name: fetched.mesa.name,
+      join_code: fetched.mesa.join_code,
+      pin,
+      players: fetched.players,
+      created_at: new Date().toISOString(),
+      spectator: canEdit ? false : true,
+    };
+    await saveMesa(mesa);
+    return mesa;
   }
 
   throw new Error('No se encontró la mesa con ese código.');
@@ -93,9 +112,32 @@ export async function getMesaById(mesaId: string) {
   return getMesa(mesaId);
 }
 
-export async function getMatches(mesaId: string) {
-  const matches = await getMatchesLocal(mesaId);
-  return matches.sort((a, b) => b.started_at.localeCompare(a.started_at));
+export async function getMatches(mesaId: string): Promise<Match[]> {
+  const local = await getMatchesLocal(mesaId);
+  const mesa = await getMesa(mesaId);
+
+  let remote: Match[] = [];
+  if (mesa && isServerId(mesa.id)) {
+    const serverMatches = await getServerMatches(mesa.id);
+    remote = serverMatches.map((s) => ({
+      id: s.id,
+      mesa_id: s.mesa_id,
+      target_points: s.target_points,
+      team_a_players: s.team_a_players.map((pid) => mesa.players.find((p) => p.id === pid)?.name ?? pid),
+      team_b_players: s.team_b_players.map((pid) => mesa.players.find((p) => p.id === pid)?.name ?? pid),
+      team_a_score: s.team_a_score,
+      team_b_score: s.team_b_score,
+      winner: s.winner ?? 'draw',
+      started_at: s.started_at,
+      finished_at: s.finished_at,
+    }));
+  }
+
+  const byId = new Map<string, Match>();
+  for (const m of remote) byId.set(m.id, m);
+  for (const m of local) if (!byId.has(m.id)) byId.set(m.id, m);
+
+  return [...byId.values()].sort((a, b) => b.started_at.localeCompare(a.started_at));
 }
 
 export async function finishMatch(
