@@ -19,6 +19,17 @@ begin
 end;
 $$;
 
+-- PostgREST expone todos los headers del request en el GUC JSON
+-- `request.headers` (claves en minúscula y con el nombre completo
+-- del header, ej. `request.pin`).
+create or replace function current_pin()
+returns text
+language sql
+immutable
+as $$
+  select coalesce(current_setting('request.headers', true)::jsonb ->> 'request.pin', '')
+$$;
+
 grant execute on function secret(text, text) to anon;
 
 create table public.mesa (
@@ -120,61 +131,61 @@ grant insert, select, delete on public.match_event to anon;
 
 -- Sin cuentas personales: la "autenticación" es código de mesa + PIN.
 -- Toda operación (excepto SELECT de mesa por código) exige el PIN correcto
--- vía header `request.pin` (se convierte en GUC request.pin en Postgres).
+-- vía header `request.pin` (PostgREST lo expone en el GUC `request.headers`).
 create policy "mesa_select_by_code" on public.mesa
   for select using (true);
 
 create policy "mesa_insert_with_pin" on public.mesa
-  for insert with check (secret(join_code, current_setting('request.pin', true)));
+  for insert with check (secret(join_code, current_pin()));
 
 create policy "player_read_with_pin" on public.player
   for select using (secret(
     (select m.join_code from public.mesa m where m.id = mesa_id),
-    current_setting('request.pin', true)
+    current_pin()
   ));
 
 create policy "player_write_with_pin" on public.player
   for insert with check (secret(
     (select m.join_code from public.mesa m where m.id = mesa_id),
-    current_setting('request.pin', true)
+    current_pin()
   ));
 
 create policy "match_read_with_pin" on public.match
   for select using (secret(
     (select m.join_code from public.mesa m where m.id = mesa_id),
-    current_setting('request.pin', true)
+    current_pin()
   ));
 
 create policy "match_insert_with_pin" on public.match
   for insert with check (secret(
     (select m.join_code from public.mesa m where m.id = mesa_id),
-    current_setting('request.pin', true)
+    current_pin()
   ));
 
 create policy "match_update_with_pin" on public.match
   for update using (secret(
     (select m.join_code from public.mesa m where m.id = mesa_id),
-    current_setting('request.pin', true)
+    current_pin()
   ))
   with check (secret(
     (select m.join_code from public.mesa m where m.id = mesa_id),
-    current_setting('request.pin', true)
+    current_pin()
   ));
 
 create policy "match_event_read_with_pin" on public.match_event
   for select using (secret(
     (select m.join_code from public.mesa m join public.match mt on mt.mesa_id = m.id where mt.id = match_id),
-    current_setting('request.pin', true)
+    current_pin()
   ));
 
 create policy "match_event_insert_with_pin" on public.match_event
   for insert with check (secret(
     (select m.join_code from public.mesa m join public.match mt on mt.mesa_id = m.id where mt.id = match_id),
-    current_setting('request.pin', true)
+    current_pin()
   ));
 
 create policy "match_event_delete_with_pin" on public.match_event
   for delete using (secret(
     (select m.join_code from public.mesa m join public.match mt on mt.mesa_id = m.id where mt.id = match_id),
-    current_setting('request.pin', true)
+    current_pin()
   ));
