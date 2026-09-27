@@ -14,27 +14,42 @@ const hasRealCredentials = (url: string, key: string) =>
 
 export const isSupabaseConfigured = hasRealCredentials(supabaseUrl, supabaseAnonKey);
 
-const makeClient = (headers: Record<string, string>): SupabaseClient =>
-  createClient(supabaseUrl, supabaseAnonKey, {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-    },
-    global: { headers },
-  });
+// Los clientes se crean bajo demanda y solo con credenciales reales: `createClient('')`
+// tira "supabaseUrl is required." y, si eso pasa al(require) de una ruta, en release es
+// un error fatal durante el render que cierra la app.
+let baseClient: SupabaseClient | null = null;
 
-// Cliente base: sin header de PIN (solo para canales Realtime / broadcast).
-export const supabase = makeClient({});
+// Cliente base: sin header de PIN (solo lecturas públicas / canales Realtime).
+export function getSupabase(): SupabaseClient | null {
+  if (!isSupabaseConfigured) return null;
+  if (!baseClient) {
+    baseClient = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+      },
+      global: { headers: {} },
+    });
+  }
+  return baseClient;
+}
 
 const clientCache = new Map<string, SupabaseClient>();
 
 // Cliente por mesa: envía `request.pin` como GUC, necesario para el RLS.
-export const clientForPin = (pin: string): SupabaseClient => {
-  if (!pin) return supabase;
+export function clientForPin(pin: string): SupabaseClient | null {
+  if (!isSupabaseConfigured) return null;
+  if (!pin) return getSupabase();
   let client = clientCache.get(pin);
   if (!client) {
-    client = makeClient({ 'request.pin': pin });
+    client = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+      },
+      global: { headers: { 'request.pin': pin } },
+    });
     clientCache.set(pin, client);
   }
   return client;
-};
+}
