@@ -1,11 +1,18 @@
-import { ErrorUtils } from 'react-native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { stashError } from '@/lib/reportError';
 
-if (!__DEV__) {
-  const originalHandler = ErrorUtils.getGlobalHandler();
-  ErrorUtils.setGlobalHandler((error, isFatal) => {
+type ErrorHandler = (error: unknown, isFatal?: boolean) => void;
+type ErrorUtilsGlobal = {
+  getGlobalHandler(): ErrorHandler;
+  setGlobalHandler(handler: ErrorHandler): void;
+};
+
+const errorUtils = (globalThis as { ErrorUtils?: ErrorUtilsGlobal }).ErrorUtils;
+
+if (!__DEV__ && errorUtils) {
+  const originalHandler = errorUtils.getGlobalHandler();
+  errorUtils.setGlobalHandler((error, isFatal) => {
     void stashError(error);
     originalHandler(error, isFatal);
   });

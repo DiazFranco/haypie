@@ -10,7 +10,7 @@ export default function HomeScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      readError().then(setCrash);
+      void readError().then(setCrash);
     }, [])
   );
 
