@@ -54,7 +54,8 @@ Ideal para la ronda del bar, el cumple o la competencia del domingo.
 1. **Crear app**: nombre, idioma Español, tipo *Juego*, gratis, completar declaraciones.
 2. **App content** (bloquea la primera release): Data safety → Content rating → App access → Ads → Target audience.
 3. **Testing → Internal testing → Create new release**:
-   - Subir el AAB de producción (`build/hay-pie-truco-v1.aab` o el más reciente que generemos).
+   - Subir el AAB de producción más reciente de `build/`.
+   - Cada release nuevo requiere subir `android.versionCode` en `app.json` (Play rechaza repetirlo).
    - Play crea el certificado de *Play App Signing* en el primer upload.
 4. **Testers** → agregar `franco.gdiaz9@gmail.com` (hasta 100) → copiar el **opt-in link** → abrirlo en el teléfono e instalar.
 5. Probar con 2-3 personas: crear mesa, unirse desde otro teléfono como espectador, ver el marcador en vivo.
