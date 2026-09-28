@@ -1,6 +1,15 @@
 import { getMesas, getMesa, saveMesa, saveMatch, getMatches as getMatchesLocal, newId } from '@/lib/storage';
 import { isSupabaseConfigured } from '@/lib/supabase';
-import { pushMesa, fetchMesaByCode, verifyPin, isServerId, getServerMatches, finishMesaMatch, broadcastMesa } from '@/lib/sync';
+import {
+  pushMesa,
+  fetchMesaByCode,
+  verifyPin,
+  isServerId,
+  getServerMatches,
+  finishMesaMatch,
+  fillMatchTeams,
+  broadcastMesa,
+} from '@/lib/sync';
 import type { Mesa, Player, Match, MatchEvent } from '@/types/database';
 
 const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -135,7 +144,18 @@ export async function getMatches(mesaId: string): Promise<Match[]> {
 
   const byId = new Map<string, Match>();
   for (const m of remote) byId.set(m.id, m);
-  for (const m of local) if (!byId.has(m.id)) byId.set(m.id, m);
+  for (const m of local) {
+    const existing = byId.get(m.id);
+    if (!existing) {
+      byId.set(m.id, m);
+      continue;
+    }
+    byId.set(m.id, {
+      ...existing,
+      team_a_players: existing.team_a_players.length ? existing.team_a_players : m.team_a_players,
+      team_b_players: existing.team_b_players.length ? existing.team_b_players : m.team_b_players,
+    });
+  }
 
   return [...byId.values()].sort((a, b) => b.started_at.localeCompare(a.started_at));
 }
@@ -174,6 +194,11 @@ export async function finishMatch(
   };
 
   if (mesa && isServerId(mesa.id) && input.serverMatchId) {
+    const half = Math.ceil(mesa.players.length / 2);
+    await fillMatchTeams(mesaId, mesa.pin, input.serverMatchId, {
+      teamA: mesa.players.slice(0, half).map((p) => p.id),
+      teamB: mesa.players.slice(half).map((p) => p.id),
+    });
     await finishMesaMatch(mesaId, mesa.pin, {
       matchId: input.serverMatchId,
       winner,

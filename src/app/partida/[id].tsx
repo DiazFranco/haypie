@@ -78,6 +78,7 @@ export default function PartidaScreen() {
       }
       if (spectatorRef.current) return null;
       const { teamA, teamB } = getTeamIds();
+      if (teamA.length === 0) return null;
       const created = await createOpenMatch(mesa.id, mesa.pin, {
         targetPoints: targetRef.current,
         teamAPlayers: teamA,
@@ -100,6 +101,12 @@ export default function PartidaScreen() {
     getMesa(id).then(setMesa);
     getPlayers(id).then(setPlayers);
   }, [id]);
+
+  useEffect(() => {
+    if (!mesa || !isServerId(mesa.id) || players.length === 0) return;
+    void ensureOpenMatch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mesa, players.length]);
 
   useEffect(() => {
     if (!mesa || !isServerId(mesa.id)) return;

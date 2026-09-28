@@ -226,6 +226,24 @@ export async function finishMesaMatch(mesaId: string, pin: string, server: {
   }
 }
 
+export async function fillMatchTeams(
+  mesaId: string,
+  pin: string,
+  matchId: string,
+  teams: { teamA: string[]; teamB: string[] }
+): Promise<void> {
+  const client = clientForPin(pin);
+  if (!client || teams.teamA.length === 0 || teams.teamB.length === 0) return;
+  try {
+    await client
+      .from('match')
+      .update({ team_a_players: teams.teamA, team_b_players: teams.teamB })
+      .eq('id', matchId);
+  } catch {
+    // best-effort
+  }
+}
+
 export function isServerId(id: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
 }
