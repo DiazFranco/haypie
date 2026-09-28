@@ -4,6 +4,7 @@ import { Link, useFocusEffect } from 'expo-router';
 import { colors } from '@/theme';
 import { Button } from '@/components/ui';
 import { readError, clearError, type CrashRecord } from '@/lib/reportError';
+import { AyudaLink } from '@/components/ayuda-link';
 
 export default function HomeScreen() {
   const [crash, setCrash] = useState<CrashRecord | null>(null);
@@ -49,6 +50,7 @@ export default function HomeScreen() {
           <Button title="Unirse con código" variant="ghost" onPress={() => {}} />
         </Link>
       </View>
+      <AyudaLink />
     </ScrollView>
   );
 }
