@@ -117,12 +117,22 @@ mesa          -> player          -> match          -> match_event
 
 Los `match_event` son el timeline de la partida (`+1`, `+2`, `+4`, ...), lo que permite reconstruir cada partido punto a punto.
 
+## Publicación
+
+- Cuenta de desarrollador: **Cuyo Games** · Application ID: `com.cuyogames.haypie`
+- Contacto de soporte: franco.gdiaz9@gmail.com
+- Guion paso a paso de la consola, textos de la ficha y respuestas de Data safety / Content rating: [`PLAY.md`](PLAY.md)
+- Política de privacidad: [`PRIVACY.md`](PRIVACY.md)
+- Assets de la ficha: `store/play-icon-512.png`, `store/play-feature-graphic-1024x500.png`
+- Builds: `eas build -p android --profile preview` (APK para instalar a mano) y `--profile production` (AAB para Google Play).
+
 ## Seguridad y privacidad
 
 - No se piden datos personales: nombre, código y PIN alcanzan.
 - El PIN se almacena hasheado en la base (nunca en claro en el servidor).
 - **Lectura libre por código** (espectador), **escritura solo con PIN**: RLS permite ver equipos, marcador e historial a cualquiera que conozca el código, pero exige el PIN correcto para insertar/actualizar/borrar.
 - Broadcast de Realtime solo en canal propio de cada mesa.
+- Detalle completo en [`PRIVACY.md`](PRIVACY.md).
 
 ## Roadmap (fuera del MVP)
 
