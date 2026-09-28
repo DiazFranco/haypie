@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View, Pressable } from 'react-native';
+import { StyleSheet, Text, View, Pressable } from 'react-native';
 import { router } from 'expo-router';
 import { colors } from '@/theme';
-import { Button, Input, BackButton } from '@/components/ui';
+import { Button, Input, BackButton, FormScrollView } from '@/components/ui';
 import { createMesa } from '@/lib/mesa';
 
 const MIN_PLAYERS = 2;
@@ -79,9 +79,15 @@ export default function CreateMesaScreen() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <FormScrollView contentContainerStyle={styles.container}>
       <BackButton />
-      <Input label="Nombre de la mesa" value={name} onChangeText={setName} placeholder="Los Jueves" />
+      <Input
+        autoFocus
+        label="Nombre de la mesa"
+        value={name}
+        onChangeText={setName}
+        placeholder="Los Jueves"
+      />
       <Input
         label="PIN (4 dígitos)"
         value={pin}
@@ -112,7 +118,7 @@ export default function CreateMesaScreen() {
 
       {error ? <Text style={styles.error}>{error}</Text> : null}
       <Button title={loading ? 'Creando…' : 'Crear mesa'} onPress={handleCreate} disabled={loading} />
-    </ScrollView>
+    </FormScrollView>
   );
 }
 

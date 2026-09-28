@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 import { router } from 'expo-router';
 import { colors } from '@/theme';
-import { Button, Input, BackButton } from '@/components/ui';
+import { Button, Input, BackButton, FormScrollView } from '@/components/ui';
 import { joinMesaByCode } from '@/lib/mesa';
 
 export default function JoinMesaScreen() {
@@ -29,9 +29,15 @@ export default function JoinMesaScreen() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <FormScrollView contentContainerStyle={styles.container}>
       <BackButton />
-      <Input label="Código de la mesa" value={code} onChangeText={setCode} placeholder="TRUCO-8K4P" />
+      <Input
+        autoFocus
+        label="Código de la mesa"
+        value={code}
+        onChangeText={setCode}
+        placeholder="TRUCO-8K4P"
+      />
       <Input
         label="PIN (opcional)"
         value={pin}
@@ -44,7 +50,7 @@ export default function JoinMesaScreen() {
       </Text>
       {error ? <Text style={styles.error}>{error}</Text> : null}
       <Button title={loading ? 'Buscando…' : 'Unirse'} onPress={handleJoin} disabled={loading} />
-    </ScrollView>
+    </FormScrollView>
   );
 }
 
