@@ -1,10 +1,11 @@
 import { useCallback, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View, Image, Pressable } from 'react-native';
-import { Link, useFocusEffect } from 'expo-router';
+import { Link, router, useFocusEffect } from 'expo-router';
 import { colors } from '@/theme';
 import { Button } from '@/components/ui';
 import { readError, clearError, type CrashRecord } from '@/lib/reportError';
-import { AyudaLink } from '@/components/ayuda-link';
+import { FooterLinks } from '@/components/footer-links';
+import { hasSeenTutorial } from '@/lib/tutorial';
 
 export default function HomeScreen() {
   const [crash, setCrash] = useState<CrashRecord | null>(null);
@@ -12,6 +13,9 @@ export default function HomeScreen() {
   useFocusEffect(
     useCallback(() => {
       void readError().then(setCrash);
+      void hasSeenTutorial().then((seen) => {
+        if (!seen) router.replace('/tutorial');
+      });
     }, [])
   );
 
@@ -50,7 +54,7 @@ export default function HomeScreen() {
           <Button title="Unirse con código" variant="ghost" onPress={() => {}} />
         </Link>
       </View>
-      <AyudaLink />
+      <FooterLinks />
     </ScrollView>
   );
 }
