@@ -8,6 +8,8 @@ App móvil (iOS + Android) para llevar el marcador de partidas de Truco Argentin
 
 ## Funcionalidades
 
+- Tutorial de uso de la app al primer arranque (5 pasos, con "Saltar") y siempre accesible desde el home en "Cómo usar la app".
+
 - **Crear una mesa** — hasta 6 jugadores, se arman automáticamente en 2 equipos (primera mitad vs segunda) con separador visual `VS`.
 - **Unirse con código + PIN** — la mesa genera un código único (`TRUCO-XXXXXX`) verificando colisiones; cualquiera se une con el código y el PIN.
 - **Modo espectador** — unirse solo con el código permite ver la partida en vivo, el historial y las estadísticas; el PIN solo es necesario para sumar puntos, deshacer y finalizar. Ideal para ver cómo va otra mesa sin poder modificarla.

@@ -65,5 +65,6 @@ Ideal para la ronda del bar, el cumple o la competencia del domingo.
 
 - [ ] Capturas de pantalla (mínimo 2, formato teléfono). Se pueden sacar del emulador o del teléfono en internal testing.
 - [ ] Probar el flujo de espectador con dos dispositivos reales.
+- [ ] Probar el tutorial de primer arranque (aparece sólo la primera vez).
 - [ ] Confirmar que el AAB firmado por Play App Signing arranca bien.
 - [ ] (Opcional) Dominio propio para la política; hoy usamos el raw del repo.
