@@ -7,7 +7,7 @@ Contacto de soporte: **franco.gdiaz9@gmail.com** · Política de privacidad: `PR
 
 | Campo | Valor |
 |---|---|
-| Nombre en la app | Hay Pie Truco |
+| Nombre en la app | Hay pie |
 | Application ID | com.cuyogames.haypie |
 | Categoría | Games > Card |
 | Tipo | Juego, gratis |
