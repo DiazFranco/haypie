@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Política de Privacidad — Hay Pie Truco</title>
+  <meta name="description" content="Política de Privacidad de la aplicación Hay Pie Truco." />
+  <style>
+    :root {
+      --bg: #F4ECD8;
+      --card: #FFFFFF;
+      --text: #1B1B1F;
+      --muted: #5A5A52;
+      --accent: #B79A00;
+      --border: #E2D9BE;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 24px 16px 64px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.65;
+      font-size: 16px;
+    }
+    main {
+      max-width: 760px;
+      margin: 0 auto;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 32px 28px;
+    }
+    h1 { font-size: 1.75rem; line-height: 1.25; margin: 0 0 8px; }
+    h2 {
+      font-size: 1.2rem;
+      margin: 32px 0 10px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid var(--accent);
+      display: inline-block;
+    }
+    h1 + p .updated, .updated { color: var(--muted); font-size: 0.9rem; }
+    p, li { color: var(--text); }
+    ul { padding-left: 22px; }
+    li { margin-bottom: 6px; }
+    a { color: var(--accent); font-weight: 600; }
+    strong { font-weight: 700; }
+    footer {
+      max-width: 760px;
+      margin: 16px auto 0;
+      color: var(--muted);
+      font-size: 0.85rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Política de Privacidad — Hay Pie Truco</h1>
+    <p class="updated"><strong>Última actualización:</strong> 14 de octubre de 2026</p>
+
+    <p>
+      Hay Pie Truco es una aplicación gratuita para llevar el marcador de partidas de Truco,
+      desarrollada por <strong>Cuyo Games</strong>. Esta política explica qué información
+      guarda la app, para qué la usa, con quién la comparte y cómo pedir su eliminación.
+    </p>
+
+    <h2>Qué información se guarda</h2>
+    <p>
+      La app funciona con una "mesa" que crea cada jugador. Para poder armar el marcador, la
+      app guarda:
+    </p>
+    <ul>
+      <li>El <strong>nombre de la mesa</strong> que elegís.</li>
+      <li>Los <strong>nombres de los jugadores</strong> que cargás.</li>
+      <li>
+        Un <strong>PIN de 4 dígitos</strong> de la mesa. En el servidor el PIN se guarda como
+        un <em>hash</em> (no en texto simple). En tu teléfono el PIN se guarda para que puedas
+        volver a la mesa sin tener que reescribirlo.
+      </li>
+      <li>
+        El <strong>código de la mesa</strong> (por ejemplo <code>TRUCO-8K4P</code>) que sirve
+        para que otros se sumen.
+      </li>
+      <li>
+        El <strong>marcador de las partidas</strong>: puntos sumados por equipo, objetivo,
+        equipos y fecha.
+      </li>
+    </ul>
+    <p>
+      En tu teléfono, las mesas y el historial se guardan localmente (en el almacenamiento
+      interno de la app). Cuando la app está conectada a internet, la mesa y sus partidas se
+      sincronizan con el servidor para que otros participantes puedan ver el marcador en vivo.
+    </p>
+    <p>
+      La app también guarda en tu teléfono un <strong>registro técnico de errores</strong>
+      para diagnóstico. Ese registro <strong>nunca se envía</strong> a nuestros servidores ni
+      a terceros.
+    </p>
+
+    <h2>Para qué se usa</h2>
+    <p>
+      Únicamente para que la app funcione: mostrar el marcador, el historial y las
+      estadísticas de la mesa. No se usa con ninguna otra finalidad.
+    </p>
+
+    <h2>Quién puede ver los datos</h2>
+    <ul>
+      <li>
+        Cualquiera que conozca el <strong>código de la mesa</strong> puede verla
+        <strong>en modo espectador</strong> (ver el marcador y el historial), sin poder
+        modificarlo.
+      </li>
+      <li>Para <strong>sumar puntos o guardar la partida</strong> hace falta el PIN de la mesa.</li>
+      <li>
+        Nosotros (los desarrolladores) podemos ver el contenido de las bases de datos para
+        operar el servicio y resolver problemas reportados por los usuarios.
+      </li>
+    </ul>
+
+    <h2>Qué NO hacemos</h2>
+    <ul>
+      <li>No hay publicidad ni banners de terceros.</li>
+      <li>No hay herramientas de analítica, rastreo ni perfiles de comportamiento.</li>
+      <li>No vendemos, alquilamos ni compartimos los datos con anunciantes.</li>
+      <li>No usamos SDKs de terceros que rastreen al usuario.</li>
+      <li>
+        No recopilamos datos de contacto (email, teléfono, contactos), ubicación, cámara,
+        micrófono ni identificadores del dispositivo.
+      </li>
+    </ul>
+
+    <h2>Con quién se comparte</h2>
+    <p>
+      No compartimos tus datos con terceros, salvo con <strong>Supabase</strong>, el proveedor
+      de infraestructura que aloja la base de datos (ver la sección siguiente). Aparte de eso,
+      los datos de una mesa son visibles para las demás personas que tengan el código de esa
+      mesa.
+    </p>
+
+    <h2>Dónde se guardan los datos</h2>
+    <p>
+      Los datos del servidor se guardan en <a href="https://supabase.com" target="_blank" rel="noopener">Supabase</a>,
+      un proveedor de base de datos con servidores en Estados Unidos. El tráfico viaja cifrado
+      (HTTPS). Las mesas y el historial de tu teléfono se guardan solo en el dispositivo.
+    </p>
+
+    <h2>Cuánto tiempo se conservan</h2>
+    <p>
+      Los datos de una mesa se conservan mientras la mesa exista, para poder mostrarte el
+      historial y las estadísticas. Si pedís su eliminación, los borramos (ver la sección
+      siguiente). Los datos guardados solo en tu teléfono se eliminan automáticamente al
+      desinstalar la app.
+    </p>
+
+    <h2>Eliminación de datos</h2>
+    <p>
+      Podés pedir que borremos la mesa y su historial en cualquier momento escribiendo a
+      <a href="mailto:franco.gdiaz9@gmail.com">franco.gdiaz9@gmail.com</a> con el
+      <strong>código de la mesa</strong>. Respondemos dentro de los 7 días hábiles.
+    </p>
+    <p>
+      Si desinstalás la app, los datos que estaban solo en tu teléfono se eliminan
+      automáticamente.
+    </p>
+
+    <h2>Menores de edad</h2>
+    <p>
+      La app no está dirigida a menores de 13 años. Si sos menor de 13 años, no la uses sin el
+      consentimiento de un adulto responsable.
+    </p>
+
+    <h2>Seguridad</h2>
+    <p>
+      El tráfico entre la app y el servidor viaja cifrado (HTTPS). En el servidor, los PIN de
+      las mesas se guardan como <em>hash</em>, no en texto simple, y el acceso de escritura a
+      una mesa requiere conocer su PIN.
+    </p>
+
+    <h2>Cambios en esta política</h2>
+    <p>
+      Cualquier cambio a esta política se publicará en esta misma página con una nueva fecha
+      de actualización.
+    </p>
+
+    <h2>Contacto</h2>
+    <p>
+      Cuyo Games — <a href="mailto:franco.gdiaz9@gmail.com">franco.gdiaz9@gmail.com</a>
+    </p>
+  </main>
+  <footer>Hay Pie Truco · Cuyo Games</footer>
+</body>
+</html>

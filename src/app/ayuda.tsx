@@ -5,7 +5,7 @@ import { BackButton, FormScrollView } from '@/components/ui';
 
 const SUPPORT_EMAIL = 'franco.gdiaz9@gmail.com';
 const PRIVACY_URL =
-  'https://raw.githubusercontent.com/DiazFranco/haypie/master/PRIVACY.md';
+  'https://diazfranco.github.io/haypie/politica-de-privacidad.html';
 
 export default function AyudaScreen() {
   const version = Constants.expoConfig?.version ?? '1.0.0';

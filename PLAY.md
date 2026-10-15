@@ -12,7 +12,7 @@ Contacto de soporte: **franco.gdiaz9@gmail.com** · Política de privacidad: `PR
 | Categoría | Games > Card |
 | Tipo | Juego, gratis |
 | Email de soporte | franco.gdiaz9@gmail.com |
-| Privacidad | https://raw.githubusercontent.com/DiazFranco/haypie/master/PRIVACY.md |
+| Privacidad | https://diazfranco.github.io/haypie/politica-de-privacidad.html |
 | Ícono Play | `store/play-icon-512.png` (512×512) |
 | Feature graphic | `store/play-feature-graphic-1024x500.png` (1024×500) |
 

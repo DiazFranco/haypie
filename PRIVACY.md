@@ -1,6 +1,6 @@
 # Política de Privacidad — Hay Pie Truco
 
-**Última actualización: 27 de septiembre de 2026**
+**Última actualización: 14 de octubre de 2026**
 
 Hay Pie Truco es una aplicación gratuita para llevar el marcador de partidas de Truco.
 Esta política explica qué información guarda la app, para qué la usa y cómo pedir su eliminación.
@@ -11,21 +11,23 @@ La app funciona con una "mesa" que crea cada jugador. Para poder armar el marcad
 
 - El **nombre de la mesa** que elegís.
 - Los **nombres de los jugadores** que cargás.
-- Un **PIN de 4 dígitos** de la mesa (el PIN nunca se guarda en texto simple: se guarda como un hash, igual que una contraseña).
+- Un **PIN de 4 dígitos** de la mesa (en el servidor el PIN se guarda como un hash, no en texto simple; en tu teléfono se guarda para que puedas volver a la mesa sin reescribirlo).
 - El **código de la mesa** (por ejemplo `TRUCO-8K4P`) que sirve para que otros se sumen.
 - El **marcador de las partidas**: puntos sumados por equipo, objetivo, equipos y fecha.
 
 En tu teléfono, las mesas y el historial se guardan localmente (en el almacenamiento interno de la app). Cuando la app está conectada a internet, la mesa y sus partidas se sincronizan con el servidor para que otros participantes puedan ver el marcador en vivo.
 
+La app también guarda en tu teléfono un **registro técnico de errores** para diagnóstico. Ese registro **nunca se envía** a nuestros servidores ni a terceros.
+
 ## Para qué se usa
 
-Únicamente para que la app funcione: mostrar el marcador, el historial y las estadísticas de la mesa. No se usa con ninguna otra finalidade.
+Únicamente para que la app funcione: mostrar el marcador, el historial y las estadísticas de la mesa. No se usa con ninguna otra finalidad.
 
 ## Quién puede ver los datos
 
 - Cualquiera que conozca el **código de la mesa** puede verla **en modo espectador** (ver el marcador y el historial), sin poder modificarlo.
 - Para **sumar puntos o guardar la partida** hace falta el PIN de la mesa.
-- Nosotros (los desarrolladores) podemos ver el contenido de las bases de datos para operar el servicio y resolver problemas reports por los usuarios.
+- Nosotros (los desarrolladores) podemos ver el contenido de las bases de datos para operar el servicio y resolver problemas reportados por los usuarios.
 
 ## Qué NO hacemos
 
@@ -33,10 +35,15 @@ En tu teléfono, las mesas y el historial se guardan localmente (en el almacenam
 - No hay herramientas de analítica, rastreo ni perfiles de comportamiento.
 - No vendemos, alquilamos ni compartimos los datos con anunciantes.
 - No usamos SDKs de terceros que rastreen al usuario.
+- No recopilamos datos de contacto (email, teléfono, contactos), ubicación, cámara, micrófono ni identificadores del dispositivo.
 
 ## Dónde se guardan los datos
 
 Los datos del servidor se guardan en [Supabase](https://supabase.com), un proveedor de base de datos con servidores en Estados Unidos. Las mesas y el historial de tu teléfono se guardan solo en el dispositivo, y se borran al desinstalar la app.
+
+## Cuánto tiempo se conservan
+
+Los datos de una mesa se conservan mientras la mesa exista, para poder mostrarte el historial y las estadísticas. Si pedís su eliminación, los borramos (ver la sección siguiente). Los datos guardados solo en tu teléfono se eliminan automáticamente al desinstalar la app.
 
 ## Eliminación de datos
 
